@@ -10,14 +10,8 @@ This module replaces the three **image-based stat cards** on the [501fun.com](ht
 
 | Item | Link |
 |------|------|
-| **GitHub repository** | _Replace with your repo URL before submitting_ |
-| **Live demo** | _Deploy via GitHub Pages, Netlify, or similar — then paste URL here_ |
-
-### Deploy live demo (GitHub Pages)
-
-1. Push this repo to GitHub.
-2. Go to **Settings → Pages → Source** and select the `main` branch.
-3. Your demo will be at `https://<username>.github.io/<repo-name>/`.
+| **GitHub repository** | [github.com/JatanNeupane/501fun-feature-cards](https://github.com/JatanNeupane/501fun-feature-cards) |
+| **Live demo** | [jatanneupane.github.io/501fun-feature-cards](https://jatanneupane.github.io/501fun-feature-cards/) |
 
 ---
 
