@@ -8,21 +8,18 @@
   2. Reset / Base
   3. Demo Header (not part of the module)
   4. Feature Cards Module — the actual deliverable
-     4a. Section wrapper + header/footer CTA
-     4b. Card base styles
+     4a. Section wrapper
+     4b. Card base styles (works standalone or in a grid)
      4c. Colour themes via [data-theme]
-     4d. Inner elements (prefix, stat, label, illustration)
+     4d. Inner elements (prefix, stat, label, illustration, CTA)
   5. Responsive breakpoints
   6. Accessibility — focus, reduced motion, high-contrast
   ================================================================
 
-  CMS INTEGRATION NOTE:
-  All colour, spacing, and type values are defined as CSS custom
-  properties in :root. To integrate with a CMS design system
-  (e.g. WordPress theme.json, Craft CMS config, Contentful tokens),
-  replace these :root values with your CMS-supplied equivalents.
-  The module itself uses only var(--*) references — no hardcoded
-  values appear in component rules.
+  MODULAR NOTE:
+  .feature-card styles are scoped to the card itself — a single
+  <article class="feature-card"> dropped anywhere on a page will
+  render correctly without the .feature-cards section wrapper.
 */
 
 
@@ -32,15 +29,15 @@
 
 :root {
 
-  /* Card palette — matches 501fun.com stat cards (see task brief) */
-  --color-green:         #53FF44;
-  --color-green-text:    #1a1a1a;
+  /* Card palette — red, blue, yellow (501 Fun brand variants) */
+  --color-red:           #E8352A;
+  --color-red-text:      #ffffff;
 
-  --color-magenta:       #E800B8;
-  --color-magenta-text:  #1a1a1a;
+  --color-blue:          #1A5CFF;
+  --color-blue-text:     #ffffff;
 
-  --color-blue:          #3EC8FF;
-  --color-blue-text:     #1a1a1a;
+  --color-yellow:        #FFD000;
+  --color-yellow-text:   #1a1a1a;
 
   /* Section + demo chrome */
   --color-section-bg:    #2a0f3d;
@@ -57,7 +54,7 @@
 
   --size-prefix:  clamp(0.85rem, 1.8vw, 1rem);
   --size-stat:    clamp(2rem, 5.5vw, 3.75rem);
-  --size-stat-lg: clamp(1.5rem, 4vw, 2.75rem); /* long figures e.g. 501,000,000 */
+  --size-stat-lg: clamp(1.5rem, 4vw, 2.75rem);
   --size-label:   clamp(1rem, 2vw, 1.25rem);
   --size-body:    0.95rem;
 
@@ -69,16 +66,16 @@
   --space-xl:  4rem;
 
   /* Card geometry */
-  --card-radius:   1rem;
-  --card-padding:  clamp(1.25rem, 3.5vw, 2rem);
-  --card-min-height: 280px;
+  --card-radius:     1rem;
+  --card-padding:    clamp(1.25rem, 3.5vw, 2rem);
+  --card-min-height: 300px;
 
   /* Transitions */
   --transition-fast:   150ms ease;
   --transition-normal: 280ms ease;
 
   /* Focus ring */
-  --focus-ring: 0 0 0 3px rgba(62, 200, 255, 0.65);
+  --focus-ring: 0 0 0 3px rgba(26, 92, 255, 0.55);
 }
 
 
@@ -146,7 +143,7 @@ a {
 }
 
 .site-header__logo span {
-  color: var(--color-magenta);
+  color: var(--color-red);
 }
 
 .site-header__nav {
@@ -174,14 +171,10 @@ a {
 
 /* ================================================================
    4. FEATURE CARDS MODULE
-   ================================================================
-   Everything below this line is the self-contained, portable module.
-   It can be dropped into any page with no external dependencies
-   beyond this stylesheet.
    ================================================================ */
 
 
-/* 4a. Section wrapper
+/* 4a. Section wrapper (optional — cards work without it)
    ---------------------------------------------------------------- */
 
 .feature-cards {
@@ -191,7 +184,7 @@ a {
 
 .feature-cards__header,
 .feature-cards__grid,
-.feature-cards__footer {
+.feature-cards__note {
   max-width: 1200px;
   margin-inline: auto;
 }
@@ -209,7 +202,7 @@ a {
 
 .feature-cards__title span {
   display: block;
-  color: var(--color-magenta);
+  color: var(--color-red);
 }
 
 .feature-cards__subtitle {
@@ -228,70 +221,46 @@ a {
   gap: var(--space-md);
   align-items: stretch;
   margin-top: var(--space-lg);
+  list-style: none;
+  padding: 0;
 }
 
-.feature-cards__footer {
-  margin-top: var(--space-lg);
-  text-align: center;
+.feature-cards__item {
+  display: flex;
+  min-width: 0;
 }
 
 .feature-cards__note {
+  margin-top: var(--space-lg);
+  text-align: center;
   color: var(--color-text-muted-on-dark);
   font-size: var(--size-body);
   max-width: 42rem;
-  margin-inline: auto;
-}
-
-.feature-cards__cta {
-  display: inline-block;
-  margin-top: var(--space-md);
-  padding: 0.75em 1.75em;
-  border-radius: 2rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  color: var(--color-text-on-dark);
-  transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast);
-}
-
-.feature-cards__cta:hover {
-  background: rgba(255, 255, 255, 0.28);
-  border-color: #fff;
-  transform: scale(1.03);
-}
-
-.feature-cards__cta:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85);
 }
 
 
-/* 4b. Card base styles
+/* 4b. Card base styles — standalone-safe
    ---------------------------------------------------------------- */
 
 .feature-card {
+  flex: 1;
+  width: 100%;
   border-radius: var(--card-radius);
-  transition:
-    opacity var(--transition-normal),
-    transform var(--transition-normal),
-    box-shadow var(--transition-normal);
+  /*
+    box-shadow uses 0ms delay always so hover lift feels instant.
+    opacity/transform delays are set per-card below for entrance only.
+  */
+  transition: box-shadow var(--transition-fast) 0ms;
 }
 
-/*
-  Entrance animation — only when JS is available (.js on <html>).
-  cards.js adds .is-visible via IntersectionObserver. Without JS,
-  cards remain fully visible (no .js class, no hidden state).
-*/
 .js .feature-card {
   opacity: 0;
   transform: translateY(24px);
   will-change: opacity, transform;
+  transition:
+    opacity var(--transition-normal) 0ms,
+    transform var(--transition-normal) 0ms,
+    box-shadow var(--transition-fast) 0ms;
 }
 
 .js .feature-card.is-visible {
@@ -299,14 +268,37 @@ a {
   transform: translateY(0);
 }
 
-.feature-card:nth-child(1) { transition-delay: 0ms;   }
-.feature-card:nth-child(2) { transition-delay: 100ms; }
-.feature-card:nth-child(3) { transition-delay: 200ms; }
+/* Stagger entrance only — box-shadow stays at 0ms delay */
+.js .feature-cards__item:nth-child(1) .feature-card {
+  transition:
+    opacity var(--transition-normal) 0ms,
+    transform var(--transition-normal) 0ms,
+    box-shadow var(--transition-fast) 0ms;
+}
 
+.js .feature-cards__item:nth-child(2) .feature-card {
+  transition:
+    opacity var(--transition-normal) 100ms,
+    transform var(--transition-normal) 100ms,
+    box-shadow var(--transition-fast) 0ms;
+}
+
+.js .feature-cards__item:nth-child(3) .feature-card {
+  transition:
+    opacity var(--transition-normal) 200ms,
+    transform var(--transition-normal) 200ms,
+    box-shadow var(--transition-fast) 0ms;
+}
+
+/* Hover uses 0ms delay on all properties for instant lift */
 .feature-card:hover,
 .js .feature-card.is-visible:hover {
   transform: translateY(-6px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.28);
+  transition:
+    opacity var(--transition-normal) 0ms,
+    transform var(--transition-normal) 0ms,
+    box-shadow var(--transition-fast) 0ms;
 }
 
 .card__inner {
@@ -322,21 +314,24 @@ a {
 
 
 /* 4c. Colour themes via [data-theme]
+   ----------------------------------------------------------------
+   Each card is an independent coloured block. Add a new theme
+   by adding one [data-theme="…"] block — no JS changes needed.
    ---------------------------------------------------------------- */
 
-[data-theme="green"] .card__inner {
-  background-color: var(--color-green);
-  color: var(--color-green-text);
-}
-
-[data-theme="magenta"] .card__inner {
-  background-color: var(--color-magenta);
-  color: var(--color-magenta-text);
+[data-theme="red"] .card__inner {
+  background-color: var(--color-red);
+  color: var(--color-red-text);
 }
 
 [data-theme="blue"] .card__inner {
   background-color: var(--color-blue);
   color: var(--color-blue-text);
+}
+
+[data-theme="yellow"] .card__inner {
+  background-color: var(--color-yellow);
+  color: var(--color-yellow-text);
 }
 
 
@@ -358,8 +353,7 @@ a {
   margin-top: 0.1rem;
 }
 
-/* Smaller stat size for long numbers (501,000,000) */
-[data-theme="blue"] .card__stat {
+[data-theme="yellow"] .card__stat {
   font-size: var(--size-stat-lg);
 }
 
@@ -382,6 +376,50 @@ a {
   width: min(120px, 40%);
   height: auto;
   margin-inline: auto;
+}
+
+.card__cta {
+  display: inline-block;
+  margin-top: var(--space-md);
+  padding: 0.6em 1.4em;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  color: inherit;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast) 0ms,
+    border-color var(--transition-fast) 0ms,
+    transform var(--transition-fast) 0ms;
+}
+
+[data-theme="yellow"] .card__cta {
+  background: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+.card__cta:hover {
+  background: rgba(255, 255, 255, 0.38);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: scale(1.04);
+}
+
+[data-theme="yellow"] .card__cta:hover {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(0, 0, 0, 0.4);
+}
+
+.card__cta:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="yellow"] .card__cta:focus-visible {
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.6);
 }
 
 
@@ -418,22 +456,6 @@ a {
   border: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .js .feature-card {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-
-  .feature-card:hover {
-    transform: none;
-  }
-
-  .feature-cards__cta:hover {
-    transform: none;
-  }
-}
-
 .skip-link {
   position: absolute;
   top: -100%;
@@ -450,12 +472,28 @@ a {
   top: 0;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .js .feature-card {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .feature-card:hover {
+    transform: none;
+  }
+
+  .card__cta:hover {
+    transform: none;
+  }
+}
+
 @media (forced-colors: active) {
   .card__inner {
     border: 2px solid ButtonText;
   }
 
-  .feature-cards__cta {
+  .card__cta {
     border: 2px solid ButtonText;
     forced-color-adjust: none;
   }
